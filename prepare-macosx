@@ -25,7 +25,7 @@ DIR=`pwd`
 # Options
 PREFIX="$HOME/opt/cross"
 TARGET="i686-elf"
-DEST="/tmp/NovaOS"
+DEST="/tmp/osdev"
 
 SHOW_HELP="no"
 FORCE_INSTALL="no"
@@ -137,7 +137,7 @@ if [[ ! -f ${GCC_ARCHIVE} ]]; then
 fi
 
 # Unpack the packages and prepare for building the toolchain
-BUILD_SRC=${DEST}/src
+BUILD_SRC=${DEST}
 BIN_UTILS_DIR=${BUILD_SRC}/binutils-2.24-build
 GCC_DIR=${BUILD_SRC}/gcc-4.9-build
 
@@ -162,7 +162,6 @@ make all-gcc
 make all-target-libgcc
 make install-gcc
 make install-target-libgcc
-
 
 # Clean up... we've finished everything
 cd ${DIR}
