@@ -20,6 +20,8 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+DIR=`pwd`
+
 # Options
 PREFIX="$HOME/opt/cross"
 TARGET="i686-elf"
@@ -142,6 +144,7 @@ GCC_DIR=${BUILD_SRC}/gcc-4.9-build
 mkdir -p ${BIN_UTILS_DIR} ${GCC_DIR}
 
 echo "\033[1;33mExpanding downloaded packages\033[0m"
+cd ${DEST}
 tar -zxf ${BIN_UTILS_ARCHIVE}
 tar -zxf ${GCC_ARCHIVE}
 
@@ -152,4 +155,14 @@ cd ${BIN_UTILS_DIR}
 make
 make install
 
-cd ..
+cd ${GCC_DIR}
+../gcc-4.9.0/configure --target=$TARGET --prefix="$PREFIX"\
+    --disable-nls --enable-languages=c,c++ --without-headers
+make all-gcc
+make all-target-libgcc
+make install-gcc
+make install-target-libgcc
+
+
+# Clean up... we've finished everything
+cd ${DIR}
