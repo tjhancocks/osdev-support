@@ -76,7 +76,7 @@ fi
 
 # Test for the existance of the tools we're making. Check if the user wants to
 # proceed (if the prefix is different.)
-COMPILER_PATH=`which ${TARG }-gcc`
+COMPILER_PATH=`which ${TARGET}-gcc`
 if [[ ! -z "${COMPILER_PATH}" && ${FORCE_INSTALL} == "no" ]]; then
     echo "You already have the tools installed!"
     exit 1
