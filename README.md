@@ -1,15 +1,23 @@
-# osdev-support
-Support scripts and resources for hobby OS Dev projects.
+# OSDev Support
+The purpose of this repository is to provide an access point/portal to various commonly used resources in my own OS Development projects, that can be easily accessed or used across various projects.
 
-### Using
+Overtime it will have GRUB template disk images added, toolchain build scripts, and various other useful scripts related to generic OS Dev.
 
-Run with the default configuration for preparing the toolchain
+### Current Limitations
+Currently only Mac OS X is supported by the toolchain build script, due to its requirement of Homebrew. I plan on adding support for Linux (Debian) in time as it enters my requirements. Additionally the build scripts all assume a bash environment, and will only build GCC-4.9 and binutils-2.24.
+
+### How to Use
+It is very simple to use the script. By default the script will run with
+default options matching the limitations mentioned previously.
 
     ./prepare
 
 Get help on how to use the prepare script beyond default configuration
 
     ./prepare --help
+
+### WARNING
+The script will currently make no attempt to test if the environment its running in is valid. What it will do is test to see if you already have the requested tools installed. If you do, it will exit early.
 
 ### LICENSE
 The MIT License (MIT)
