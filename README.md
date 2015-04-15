@@ -5,11 +5,11 @@ Support scripts and resources for hobby OS Dev projects.
 
 Run with the default configuration for preparing the toolchain
 
-    ./prepare-macosx
+    ./prepare
 
 Get help on how to use the prepare script beyond default configuration
 
-    ./prepare-macosx --help
+    ./prepare --help
 
 ### LICENSE
 The MIT License (MIT)

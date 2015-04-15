@@ -20,6 +20,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+set -e
 DIR=`pwd`
 
 # Options
@@ -32,17 +33,17 @@ FORCE_INSTALL="no"
 PURGE="no"
 for opt do
     case "$opt" in
-    --prefix=*) prefix=`echo $opt | cut -d '=' -f 2`
+    --prefix=*) PREFIX=`echo $opt | cut -d '=' -f 2`
     ;;
-    --target=*) target=`echo $opt | cut -d '=' -f 2`
+    --target=*) TARGET=`echo $opt | cut -d '=' -f 2`
     ;;
-    --force) force_install="yes"
+    --force) FORCE_INSTALL="yes"
     ;;
     --download) DEST=`echo $opt | cut -d '=' -f 2`
     ;;
-    --purge) purge="yes"
+    --purge) PURGE="yes"
     ;;
-    --help) show_help="yes"
+    --help) SHOW_HELP="yes"
     ;;
     esac
 done
@@ -50,7 +51,7 @@ done
 if [[ ${SHOW_HELP} == "yes" ]]; then
 cat <<EOF
 
-Usage: ./toolchain/prepare [options]
+Usage: ./toolchain/gcc/prepare-gcc-macosx [options]
 Options: [defaults in brackets after descriptions]
 
 In order for this tool to run correctly, you will need bash, homebrew and 
@@ -72,6 +73,7 @@ fi
 # Test for the existance of homebrew. We need it!
 BREW=`which brew`
 if [[ -z "${BREW}" ]]; then
+    echo ""
     echo "You require homebrew to proceed with this installation!"
     exit 1
 fi
@@ -80,6 +82,7 @@ fi
 # proceed (if the prefix is different.)
 COMPILER_PATH=`which ${TARGET}-gcc`
 if [[ ! -z "${COMPILER_PATH}" && ${FORCE_INSTALL} == "no" ]]; then
+    echo ""
     echo "You already have the tools installed!"
     exit 1
 fi
@@ -96,13 +99,16 @@ export LD=gcc-4.9
 
 # Brew
 if brew list -1 | grep -q "^gcc49\$"; then
+    echo ""
     echo "\033[1;32mgcc49 already installed\033[0m"
 else
+    echo ""
     echo "\033[1;31mgcc49 not present... installing\033[0m"
     brew tap homebrew/versions
     brew install --enable-cxx  gcc49
 fi
 
+echo ""
 echo "\033[1;33mChecking for required libraries...\033[0m"
 for PKG in mpfr gmp libmpc; do
     if brew list -1 | grep -q "^${PKG}\$"; then
@@ -127,11 +133,13 @@ fi
 mkdir -p ${DEST}
 
 if [[ ! -f ${BIN_UTILS_ARCHIVE} ]]; then
+    echo ""
     echo "\033[1;36mDownloading ${BINUTILS_2_24_SOURCE}\033[0m"
     curl -# ${BINUTILS_2_24_SOURCE} > ${BIN_UTILS_ARCHIVE}
 fi
 
 if [[ ! -f ${GCC_ARCHIVE} ]]; then
+    echo ""
     echo "\033[1;36mDownloading ${GCC_4_9_SOURCE}\033[0m"
     curl -# ${GCC_4_9_SOURCE} > ${GCC_ARCHIVE}
 fi
@@ -143,11 +151,14 @@ GCC_DIR=${BUILD_SRC}/gcc-4.9-build
 
 mkdir -p ${BIN_UTILS_DIR} ${GCC_DIR}
 
+echo ""
 echo "\033[1;33mExpanding downloaded packages\033[0m"
 cd ${DEST}
 tar -zxf ${BIN_UTILS_ARCHIVE}
 tar -zxf ${GCC_ARCHIVE}
 
+
+echo ""
 echo "\033[1;33mConfiguring & Installing binutils\033[0m"
 cd ${BIN_UTILS_DIR}
 ../binutils-2.24/configure --target=${TARGET} --prefix="${PREFIX}"\
@@ -163,5 +174,29 @@ make all-target-libgcc
 make install-gcc
 make install-target-libgcc
 
+# add the tools to the users PATH and bash profile
+echo ""
+echo "\033[1;33mAdding tools to your profile & PATH\033[0m"
+echo "export PATH=\"\$PATH:$PREFIX/bin\"" >> ~/.bash_profile
+
+
 # Clean up... we've finished everything
 cd ${DIR}
+rm -rf ${DEST}
+
+
+# Give a final wrap up message to the user with instructions.
+cat <<EOF
+
+\033[1;32mGCC Cross Compiler & Supporting Tools installed!\033[0m
+The installation has now finished and the toolchain is now ready for use.
+Unless you specified otherwise, the gcc compiler can be used by calling
+\033[1;35mi686-elf-gcc\033[0m.
+
+However there is one final step that you need to do before you can use it. That
+is to run the following command:
+
+    source ~/.bash_profile
+
+After that you will be good to go!
+EOF
