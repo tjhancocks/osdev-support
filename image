@@ -26,6 +26,9 @@
 
 # We want to work inside the temporary directory for all of this!
 cd /tmp
+rm -rf osdev-image
+mkdir -p osdev-image
+cd osdev-image
 
 # Options
 SHOW_HELP="no"
@@ -85,4 +88,5 @@ URL="${BASE_URL}/images/${MEDIA}/${FS}/${BOOTLOADER}-${VERSION}.tar.gz"
 echo ""
 echo "\033[1;33mDownload disk image: ${URL}\033[0m"
 
-curl -# "${URL}" > "${O}"
+curl -# "${URL}" > "disk.tar.gz"
+tar -zxf "disk.tar.gz"
