@@ -24,6 +24,8 @@
 # _="$(curl -fsSL ${_})"
 # sh -c "${_}"
 
+echo `pwd`
+
 # Options
 SHOW_HELP="no"
 MEDIA="floppy"
