@@ -16,6 +16,19 @@ Get help on how to use the prepare script beyond default configuration
 
     ./prepare --help
 
+### Using image
+`./image` is a script that based on the parameters it is given will download one of the template disk images available in the repo. Currently it is limited to a FAT12, Floppy Disk image with GRUB 0.94 installed.
+
+This script is slightly more complex to launch, and should be embedded into another shell script that calls it automatically.
+
+    PROJ_ROOT=`pwd`
+    URL="https://raw.githubusercontent.com/tjhancocks/osdev-support"
+    URL="${URL}/master/image"
+    SRC="$(curl -fsSL ${URL})"
+    sh -c "${SRC}" -- --o="${PROJ_ROOT}/template-disk.img"
+
+This will download the image script from the repo execute it and pass it the `--o` flag detailing where the disk image template should be placed.
+
 ### WARNING
 The script will currently make no attempt to test if the environment its running in is valid. What it will do is test to see if you already have the requested tools installed. If you do, it will exit early.
 
