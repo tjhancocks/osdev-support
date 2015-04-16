@@ -98,3 +98,5 @@ if [[ ! -f "disk.img" ]]; then
 	echo "\033[1;31mMissing disk.img\033[0m"
 	exit 1
 fi
+
+mv "disk.img" "${O}"
