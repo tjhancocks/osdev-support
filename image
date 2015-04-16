@@ -86,13 +86,13 @@ URL="${BASE_URL}/images/${MEDIA}/${FS}/${BOOTLOADER}-${VERSION}.tar.gz"
 
 # Download
 echo ""
-echo "\033[1;33mDownload disk image: ${URL}\033[0m"
+echo "\033[0;33mDownload disk image: ${URL}\033[0m"
 
 curl -# "${URL}" > "disk.tar.gz"
 
 # Unpack
 echo ""
-echo "\033[1;33mUnpacking disk image: ${URL}\033[0m"
+echo "\033[0;33mUnpacking disk image\033[0m"
 tar -zxf "disk.tar.gz"
 if [[ ! -f "disk.img" ]]; then
 	echo "\033[1;31mMissing disk.img\033[0m"
