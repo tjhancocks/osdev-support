@@ -1,0 +1,83 @@
+#!/bin/sh
+# The MIT License (MIT)
+# 
+# Copyright (c) 2015 Tom Hancocks
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# _="https://raw.githubusercontent.com/tjhancocks/osdev-support/master/image"
+# _="$(curl -fsSL ${_})"
+# sh -c "${_}"
+
+# Options
+SHOW_HELP="no"
+MEDIA="floppy"
+FS="fat12"
+BOOTLOADER="grub"
+VERSION="0.94"
+O="file.tar.gz"
+
+# Get the users options
+for opt do
+	OPTS="${OPTS}${opt} "
+    case "$opt" in
+    --media=*) MEDIA=`echo $opt | cut -d '=' -f 2`
+    ;;
+    --fs=*) FS=`echo $opt | cut -d '=' -f 2`
+    ;;
+    --bootloader=*) BOOTLOADER=`echo $opt | cut -d '=' -f 2`
+    ;;
+    --blvers=*) VERSION=`echo $opt | cut -d '=' -f 2`
+    ;;
+    --o=*) O=`echo $opt | cut -d '=' -f 2`
+    ;;
+    --help) SHOW_HELP="yes"
+    ;;
+    esac
+done
+
+
+if [[ ${SHOW_HELP} == "yes" ]]; then
+cat <<EOF
+
+Usage: ./image [options]
+Options: [defaults in brackets after descriptions]
+
+Provides an interface for downloading prebuilt blank disk images with various
+bootloaders preinstalled, or for various filesystems.
+
+EOF
+echo "Standard Options"
+echo "--help        Display script options"
+echo "--media       The media that is being built [${MEDIA}]"
+echo "--fs          The file system that the media should be formatted with"
+echo " 				[${FS}]"
+echo "--bootloader  The bootloader software that should be used [${BOOTLOADER}]"
+echo "--blvers      The version of the bootloader that should be used"
+echo "              [${VERSION}]"
+echo "--o 			The file which the disk image should be downloaded to"
+exit 1
+fi
+
+# Construct the URL to the request
+BASE_URL="https://raw.githubusercontent.com/tjhancocks/osdev-support/master"
+URL="${BASE_URL}/images/${MEDIA}/${FS}/${BOOTLOADER}-${VERSION}.tar.gz"
+
+# Prepare to download
+echo ""
+echo "\033[1;33mDownload disk image: ${URL}\033[0m"
