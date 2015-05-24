@@ -27,10 +27,12 @@ DIR=`pwd`
 PREFIX="$HOME/opt/cross"
 TARGET="i686-elf"
 DEST="/tmp/osdev"
+BREW_SRC_URL="https://raw.githubusercontent.com/Homebrew/install/master/install"
 
 SHOW_HELP="no"
 FORCE_INSTALL="no"
 PURGE="no"
+INSTALL_BREW="no"
 for opt do
     case "$opt" in
     --prefix=*) PREFIX=`echo $opt | cut -d '=' -f 2`
@@ -44,6 +46,8 @@ for opt do
     --purge) PURGE="yes"
     ;;
     --help) SHOW_HELP="yes"
+    ;;
+    --brew) INSTALL_BREW="yes"
     ;;
     esac
 done
@@ -67,15 +71,20 @@ echo "              [${DEST}]"
 echo "--force       Forces the script to proceed even if the tools are already"
 echo "              installed."
 echo "--purge       Purges all previously downloaded packages."
+echo "--brew        Installs Homebrew if it is not already present."
 exit 1
 fi
 
 # Test for the existance of homebrew. We need it!
 BREW=`which brew`
 if [[ -z "${BREW}" ]]; then
-    echo ""
-    echo "You require homebrew to proceed with this installation!"
-    exit 1
+    if [[ "${INSTALL_BREW}" == "yes" ]]; then
+        ruby -e "$(curl -fsSL ${BREW_SRC_URL})"
+    else
+        echo ""
+        echo "You require homebrew to proceed with this installation!"
+        exit 1
+    fi
 fi
 
 # Test for the existance of the tools we're making. Check if the user wants to
