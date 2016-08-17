@@ -101,13 +101,33 @@ else
 fi
 
 # Testing for texinfo
-if [ $(dpkg-query -W -f='${Status}' textinfo 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+if [ $(dpkg-query -W -f='${Status}' texinfo 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo ""
     echo "\033[1;31mtexinfo not present... installing\033[0m"
-    sudo apt-get install libgmp3-dev
+    sudo apt-get install texinfo
 else
     echo ""
     echo "\033[1;32mtexinfo already installed\033[0m"
+fi
+
+# Testing for make
+if [ $(dpkg-query -W -f='${Status}' make 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo ""
+    echo "\033[1;31mmake not present... installing\033[0m"
+    sudo apt-get install make
+else
+    echo ""
+    echo "\033[1;32mmake already installed\033[0m"
+fi
+
+# Testing for nasm
+if [ $(dpkg-query -W -f='${Status}' nasm 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo ""
+    echo "\033[1;31mnasm not present... installing\033[0m"
+    sudo apt-get install nasm
+else
+    echo ""
+    echo "\033[1;32mnasm already installed\033[0m"
 fi
 
 # Download the GCC & Binutils Sources
