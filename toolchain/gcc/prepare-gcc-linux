@@ -148,3 +148,46 @@ echo "\033[1;33mExpanding downloaded packages\033[0m"
 cd ${DEST}
 tar -zxf ${BIN_UTILS_ARCHIVE}
 tar -zxf ${GCC_ARCHIVE}
+
+echo ""
+echo "\033[1;33mConfiguring & Installing binutils\033[0m"
+cd ${BIN_UTILS_DIR}
+../binutils-2.24/configure --target=${TARGET} --prefix="${PREFIX}"\
+    --disable-nls --disable-werror
+make
+make install
+
+cd ${GCC_DIR}
+../gcc-4.9.0/configure --target=$TARGET --prefix="$PREFIX"\
+    --disable-nls --enable-languages=c,c++ --without-headers
+make all-gcc
+make all-target-libgcc
+make install-gcc
+make install-target-libgcc
+
+# add the tools to the users PATH and bash profile
+echo ""
+echo "\033[1;33mAdding tools to your profile & PATH\033[0m"
+echo "export PATH=\"\$PATH:$PREFIX/bin\"" >> ~/.bash_profile
+
+
+# Clean up... we've finished everything
+cd ${DIR}
+rm -rf ${DEST}
+
+
+# Give a final wrap up message to the user with instructions.
+cat <<EOF
+
+\033[1;32mGCC Cross Compiler & Supporting Tools installed!\033[0m
+The installation has now finished and the toolchain is now ready for use.
+Unless you specified otherwise, the gcc compiler can be used by calling
+\033[1;35mi686-elf-gcc\033[0m.
+
+However there is one final step that you need to do before you can use it. That
+is to run the following command:
+
+    source ~/.bashrc
+
+After that you will be good to go!
+EOF
