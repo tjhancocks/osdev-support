@@ -4,7 +4,7 @@ The purpose of this repository is to provide an access point/portal to various c
 Overtime it will have GRUB template disk images added, toolchain build scripts, and various other useful scripts related to generic OS Dev.
 
 ### Current Limitations
-Currently only Mac OS X is supported by the toolchain build script, due to its requirement of Homebrew. I plan on adding support for Linux (Debian) in time as it enters my requirements. Additionally the build scripts all assume a bash environment, and will only build GCC-4.9 and binutils-2.24.
+The build scripts all assume a bash environment, and will only build GCC-4.9 and binutils-2.24.
 
 ### How to Use
 It is very simple to use the script. By default the script will run with

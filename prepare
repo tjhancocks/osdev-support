@@ -73,9 +73,19 @@ echo "--purge       Purges all previously downloaded packages."
 exit 1
 fi
 
+# We now need to work out the target of the script. Is it MacOSX or Linux?
+case "${OSTYPE}" in
+    darwin*)    PLATFORM="macosx" 
+    ;;
+    linux*)     PLATFORM="linux" 
+    ;;
+    *)          exit 1
+    ;;
+esac
+
 
 if [[ ${CC} == "gcc" ]]; then
-	toolchain/gcc/prepare-gcc-macosx ${OPTS}
+	toolchain/gcc/prepare-gcc-${PLATFORM} ${OPTS}
 else
 	echo "\033[1;31mUnsupported Compiler: No toolchain available!\033[0m"
 	exit 1

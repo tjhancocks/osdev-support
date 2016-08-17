@@ -26,12 +26,10 @@ DIR=`pwd`
 PREFIX="$HOME/opt/cross"
 TARGET="i686-elf"
 DEST="/tmp/osdev"
-BREW_SRC_URL="https://raw.githubusercontent.com/Homebrew/install/master/install"
 
 SHOW_HELP="no"
 FORCE_INSTALL="no"
 PURGE="no"
-INSTALL_BREW="no"
 for opt do
     case "$opt" in
     --prefix=*) PREFIX=`echo $opt | cut -d '=' -f 2`
@@ -46,18 +44,16 @@ for opt do
     ;;
     --help) SHOW_HELP="yes"
     ;;
-    --brew) INSTALL_BREW="yes"
-    ;;
     esac
 done
 
 if [[ ${SHOW_HELP} == "yes" ]]; then
 cat <<EOF
 
-Usage: ./toolchain/gcc/prepare-gcc-macosx [options]
+Usage: ./toolchain/gcc/prepare-gcc-linux [options]
 Options: [defaults in brackets after descriptions]
 
-In order for this tool to run correctly, you will need bash, homebrew and 
+In order for this tool to run correctly, you will need bash, apt and 
 a working version of clang or gcc.
 
 EOF
@@ -74,59 +70,47 @@ echo "--brew        Installs Homebrew if it is not already present."
 exit 1
 fi
 
-# Test for the existance of homebrew. We need it!
-BREW=`which brew`
-if [[ -z "${BREW}" ]]; then
-    if [[ "${INSTALL_BREW}" == "yes" ]]; then
-        ruby -e "$(curl -fsSL ${BREW_SRC_URL})"
-    else
-        echo ""
-        echo "You require homebrew to proceed with this installation!"
-        exit 1
-    fi
-fi
-
-# Test for the existance of the tools we're making. Check if the user wants to
-# proceed (if the prefix is different.)
-COMPILER_PATH=`which ${TARGET}-gcc`
-if [[ ! -z "${COMPILER_PATH}" && ${FORCE_INSTALL} == "no" ]]; then
+# Testing for libgmp3-dev
+if [ $(dpkg-query -W -f='${Status}' libgmp3-dev 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
     echo ""
-    echo "You already have the tools installed!"
-    exit 1
-fi
-
-
-# Add to the path, and add it to the bash profile
-export PATH="$PREFIX/bin:$PATH"
-
-# Prepare the environment
-export CC=gcc-4.9
-export CXX=g++-4.9
-export CPP=cpp-4.9
-export LD=gcc-4.9
-
-# Brew
-if brew list -1 | grep -q "^gcc49\$"; then
-    echo ""
-    echo "\033[1;32mgcc49 already installed\033[0m"
+    echo "\033[1;31mlibgmp3-dev not present... installing\033[0m"
+    sudo apt-get install libgmp3-dev
 else
     echo ""
-    echo "\033[1;31mgcc49 not present... installing\033[0m"
-    brew tap homebrew/versions
-    brew install --enable-cxx  gcc49
+    echo "\033[1;32mlibgmp3-dev already installed\033[0m"
 fi
 
-echo ""
-echo "\033[1;33mChecking for required libraries...\033[0m"
-for PKG in mpfr gmp libmpc; do
-    if brew list -1 | grep -q "^${PKG}\$"; then
-        echo "\033[1;32m${PKG} already installed\033[0m"
-    else
-        echo "\033[1;31m${PKG} not present... installing\033[0m"
-        brew install ${PKG}
-    fi
-done
+# Testing for libmpfr-dev
+if [ $(dpkg-query -W -f='${Status}' libmpfr-dev 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo ""
+    echo "\033[1;31mlibmpfr-dev not present... installing\033[0m"
+    sudo apt-get install libmpfr-dev
+else
+    echo ""
+    echo "\033[1;32mlibmpfr-dev already installed\033[0m"
+fi
 
+# Testing for libmpc-dev
+if [ $(dpkg-query -W -f='${Status}' libmpc-dev 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo ""
+    echo "\033[1;31mlibmpc-dev not present... installing\033[0m"
+    sudo apt-get install libmpc-dev
+else
+    echo ""
+    echo "\033[1;32mlibmpc-dev already installed\033[0m"
+fi
+
+# Testing for texinfo
+if [ $(dpkg-query -W -f='${Status}' textinfo 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+    echo ""
+    echo "\033[1;31mtexinfo not present... installing\033[0m"
+    sudo apt-get install libgmp3-dev
+else
+    echo ""
+    echo "\033[1;32mtexinfo already installed\033[0m"
+fi
+
+# Download the GCC & Binutils Sources
 # Download the sources
 GCC_4_9_SOURCE="https://ftp.gnu.org/gnu/gcc/gcc-4.9.0/gcc-4.9.0.tar.gz"
 BINUTILS_2_24_SOURCE="https://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz"
@@ -164,47 +148,3 @@ echo "\033[1;33mExpanding downloaded packages\033[0m"
 cd ${DEST}
 tar -zxf ${BIN_UTILS_ARCHIVE}
 tar -zxf ${GCC_ARCHIVE}
-
-
-echo ""
-echo "\033[1;33mConfiguring & Installing binutils\033[0m"
-cd ${BIN_UTILS_DIR}
-../binutils-2.24/configure --target=${TARGET} --prefix="${PREFIX}"\
-    --disable-nls --disable-werror
-make
-make install
-
-cd ${GCC_DIR}
-../gcc-4.9.0/configure --target=$TARGET --prefix="$PREFIX"\
-    --disable-nls --enable-languages=c,c++ --without-headers
-make all-gcc
-make all-target-libgcc
-make install-gcc
-make install-target-libgcc
-
-# add the tools to the users PATH and bash profile
-echo ""
-echo "\033[1;33mAdding tools to your profile & PATH\033[0m"
-echo "export PATH=\"\$PATH:$PREFIX/bin\"" >> ~/.bash_profile
-
-
-# Clean up... we've finished everything
-cd ${DIR}
-rm -rf ${DEST}
-
-
-# Give a final wrap up message to the user with instructions.
-cat <<EOF
-
-\033[1;32mGCC Cross Compiler & Supporting Tools installed!\033[0m
-The installation has now finished and the toolchain is now ready for use.
-Unless you specified otherwise, the gcc compiler can be used by calling
-\033[1;35mi686-elf-gcc\033[0m.
-
-However there is one final step that you need to do before you can use it. That
-is to run the following command:
-
-    source ~/.bash_profile
-
-After that you will be good to go!
-EOF
