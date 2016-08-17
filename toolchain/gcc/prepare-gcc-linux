@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # The MIT License (MIT)
 # 
 # Copyright (c) 2015 Tom Hancocks
@@ -47,7 +47,7 @@ for opt do
     esac
 done
 
-if [[ ${SHOW_HELP} == "yes" ]]; then
+if [ ${SHOW_HELP} == "yes" ]; then
 cat <<EOF
 
 Usage: ./toolchain/gcc/prepare-gcc-linux [options]
@@ -118,19 +118,19 @@ GCC_ARCHIVE=${DEST}/gcc49.tar.gz
 BIN_UTILS_ARCHIVE=${DEST}/binutils.tar.gz
 
 # Ensure the destination folder exists
-if [[ ${PURGE} == "yes" ]]; then
+if [ ${PURGE} == "yes" ]; then
     rm -rf ${DEST}
 fi
 
 mkdir -p ${DEST}
 
-if [[ ! -f ${BIN_UTILS_ARCHIVE} ]]; then
+if [ ! -f ${BIN_UTILS_ARCHIVE} ]; then
     echo ""
     echo "\033[1;36mDownloading ${BINUTILS_2_24_SOURCE}\033[0m"
     curl -# ${BINUTILS_2_24_SOURCE} > ${BIN_UTILS_ARCHIVE}
 fi
 
-if [[ ! -f ${GCC_ARCHIVE} ]]; then
+if [ ! -f ${GCC_ARCHIVE} ]; then
     echo ""
     echo "\033[1;36mDownloading ${GCC_4_9_SOURCE}\033[0m"
     curl -# ${GCC_4_9_SOURCE} > ${GCC_ARCHIVE}
