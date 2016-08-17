@@ -23,8 +23,9 @@
 DIR=`pwd`
 
 # Options
-PREFIX="$HOME/opt/cross"
-TARGET="i686-elf"
+export PREFIX="$HOME/opt/cross"
+export TARGET="i686-elf"
+export PATH="$PREFIX/bin:$PATH"
 DEST="/tmp/osdev"
 
 SHOW_HELP="no"
@@ -173,9 +174,11 @@ echo ""
 echo "\033[1;33mConfiguring & Installing binutils\033[0m"
 cd ${BIN_UTILS_DIR}
 ../binutils-2.24/configure --target=${TARGET} --prefix="${PREFIX}"\
-    --disable-nls --disable-werror
+    --with-sysroot --disable-nls --disable-werror
 make
 make install
+
+which -- $TARGET-as || echo $TARGET-as is not in the PATH
 
 cd ${GCC_DIR}
 ../gcc-4.9.0/configure --target=$TARGET --prefix="$PREFIX"\
